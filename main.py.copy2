@@ -1,0 +1,81 @@
+from fastapi import FastAPI, Request
+from pprint import pprint
+import firebase_admin
+from firebase_admin import credentials, db
+from datetime import datetime
+
+# Inicializar Firebase
+cred = credentials.Certificate("firebase_key.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://rastreador-gps2-default-rtdb.firebaseio.com'
+})
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"mensaje": "FastAPI conecta correctamente"}
+
+def procesar_payload(payload):
+    order_info = {
+        "id_orden": payload.get("id"),
+        "numero_orden": payload.get("name"),
+        "estado_pago": payload.get("financial_status"),
+        "email_cliente": payload.get("contact_email"),
+        "nombre_cliente": f"{payload.get('customer', {}).get('first_name', '')} {payload.get('customer', {}).get('last_name', '')}",
+        "total_pagado": payload.get("total_price"),
+        "fecha_compra": payload.get("created_at"),
+        "productos": [],
+        "direccion_facturacion": {}
+    }
+
+    # Productos
+    for item in payload.get("line_items", []):
+        order_info["productos"].append({
+            "nombre_producto": item.get("name"),
+            "cantidad": item.get("quantity"),
+            "precio_unitario": item.get("price")
+        })
+
+    # Dirección de facturación
+    billing = payload.get("billing_address", {})
+    order_info["direccion_facturacion"] = {
+        "ciudad": billing.get("city"),
+        "estado": billing.get("province"),
+        "pais": billing.get("country"),
+        "codigo_postal": billing.get("zip"),
+        "direccion": billing.get("address1"),
+        "nombre": billing.get("name")
+    }
+
+    return order_info
+
+@app.post("/webhook/test1")
+async def recibir_webhook(mensaje: Request):
+    payload = await mensaje.json()
+    print(" Webhook completo recibido:")
+    pprint(payload)
+
+    # Procesar el payload limpio
+    orden = procesar_payload(payload)
+    print("\n Información procesada de la orden:")
+    pprint(orden)
+
+    # Sacar la fecha actual en formato YYYYMMDD
+    fecha_actual = datetime.now().strftime("%Y%m%d")
+    
+    # ID de la orden
+    id_orden = str(payload.get("id", "sin_id"))
+
+    # Guardar payload crudo en Firebase
+    ruta_crudo = f"mi_shopify/archvivo/{fecha_actual}/payloads_crudos/{id_orden}"
+    db.reference(ruta_crudo).set(payload)
+    print(f" Payload crudo guardado en: {ruta_crudo}")
+
+    # Guardar payload limpio en Firebase
+    ruta_limpio = f"mi_shopify/archvivo/{fecha_actual}/payloads_limpios/{id_orden}"
+    db.reference(ruta_limpio).set(orden)
+    print(f" Payload limpio guardado en: {ruta_limpio}")
+
+    return {"mensaje": "Webhook recibido y almacenado exitosamente"}
+
