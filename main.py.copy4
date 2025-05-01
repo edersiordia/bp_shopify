@@ -1,85 +1,23 @@
-
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
-from urllib.parse import urlencode
+from fastapi import FastAPI, Request
 from pprint import pprint
-import hmac
-import hashlib
-import requests
 import firebase_admin
 from firebase_admin import credentials, db
 from datetime import datetime
 
-# Inicialización
-app = FastAPI()
-
+# Inicializar Firebase
 cred = credentials.Certificate("firebase_key.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://rastreador-gps2-default-rtdb.firebaseio.com'
 })
 
-# Credenciales de tu app de Shopify
-SHOPIFY_CLIENT_ID = "d7ad6eca784abff38f6c1b06e19a0809"
-SHOPIFY_CLIENT_SECRET = "51690bac71da36dbb5c00c854cbbdcc6"
+app = FastAPI()
 
 @app.get("/")
 def home():
     return {"mensaje": "FastAPI conecta correctamente"}
 
-@app.get("/oauth/callback")
-async def oauth_callback(request: Request):
-    params = dict(request.query_params)
-    code = params.get("code")
-    hmac_provided = params.get("hmac")
-    shop = params.get("shop")
 
-    if not code or not hmac_provided or not shop:
-        return JSONResponse(status_code=400, content={"detail": "Faltan parámetros en la URL"})
 
-    params_to_check = {k: v for k, v in params.items() if k != "hmac"}
-    message = urlencode(sorted(params_to_check.items()))
-    hmac_calculated = hmac.new(
-        SHOPIFY_CLIENT_SECRET.encode("utf-8"),
-        message.encode("utf-8"),
-        hashlib.sha256
-    ).hexdigest()
-
-    if hmac_calculated != hmac_provided:
-        return JSONResponse(status_code=403, content={"detail": "HMAC inválido"})
-
-    access_token_url = f"https://{shop}/admin/oauth/access_token"
-    data = {
-        "client_id": SHOPIFY_CLIENT_ID,
-        "client_secret": SHOPIFY_CLIENT_SECRET,
-        "code": code
-    }
-
-    try:
-        response = requests.post(access_token_url, json=data, verify=False)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print("Error de conexión con Shopify:", e)
-        return JSONResponse(status_code=500, content={
-            "detail": "Error al conectar con Shopify",
-            "error": str(e)
-        })
-
-    token_info = response.json()
-    access_token = token_info.get("access_token")
-    scope = token_info.get("scope")
-
-    ruta = f"mi_shopify/tiendas/{shop.replace('.', '_')}"
-    db.reference(ruta).set({
-        "access_token": access_token,
-        "scope": scope,
-        "fecha_instalacion": datetime.now().isoformat()
-    })
-
-    return {
-        "mensaje": f"Autenticación exitosa para {shop}",
-        "token_guardado": True,
-        "scope": scope
-    }
 
 def procesar_payload(payload):
     order_info = {
@@ -97,6 +35,7 @@ def procesar_payload(payload):
         "productos": []
     }
 
+    # Productos
     for item in payload.get("line_items", []):
         order_info["productos"].append({
             "nombre_producto": item.get("name"),
@@ -104,7 +43,10 @@ def procesar_payload(payload):
             "precio_unitario": item.get("price")
         })
 
+
     return order_info
+
+
 
 @app.post("/webhook/test1")
 async def recibir_webhook(mensaje: Request):
@@ -112,22 +54,33 @@ async def recibir_webhook(mensaje: Request):
     print(" Webhook completo recibido:")
     pprint(payload)
 
+    # Procesar el payload limpio
     orden = procesar_payload(payload)
     print("\n Información procesada de la orden:")
     pprint(orden)
 
+    # Sacar la fecha actual en formato YYYYMMDD
     fecha_actual = datetime.now().strftime("%Y%m%d")
+    
+    # Obtener el email del cliente
     contact_email = payload.get('customer', {}).get('email', 'sin_email').replace(".", "_").replace("@", "_at_")
+
+    # ID de la orden
     id_orden = str(payload.get("id", "sin_id"))
 
+    # Guardar payload crudo en Firebase
     ruta_crudo = f"mi_shopify/historial_payloads_crudos/{id_orden}"
     db.reference(ruta_crudo).set(payload)
     print(f" Payload crudo guardado en: {ruta_crudo}")
 
+    # Guardar payload limpio en Firebase
     ruta_limpio = f"mi_shopify/historial_payloads_limpios/{id_orden}"
     db.reference(ruta_limpio).set(orden)
     print(f" Payload limpio guardado en: {ruta_limpio}")
 
+    # ========== Sección de Puntos de Cliente ==========
+
+    # Cálculo de puntos
     try:
         total_pagado = float(orden.get("total_pagado", 0))
     except ValueError:
@@ -135,12 +88,18 @@ async def recibir_webhook(mensaje: Request):
 
     puntos_ganados = int(total_pagado)
 
+    # Ruta del cliente en Firebase
     ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
     cliente_ref = db.reference(ruta_cliente)
     cliente_actual = cliente_ref.get()
 
-    puntos_totales = cliente_actual.get("puntos_totales", 0) + puntos_ganados if cliente_actual else puntos_ganados
+    # Si el cliente existe, sumamos puntos
+    if cliente_actual:
+        puntos_totales = cliente_actual.get("puntos_totales", 0) + puntos_ganados
+    else:
+        puntos_totales = puntos_ganados
 
+    # Actualizar puntos y agregar historial de pedidos
     cliente_ref.update({
         "email": payload.get('customer', {}).get('email', 'sin_email'),
         "puntos_totales": puntos_totales,
