@@ -9,6 +9,9 @@ import requests
 import firebase_admin
 from firebase_admin import credentials, db
 from datetime import datetime
+from fastapi.responses import HTMLResponse
+
+
 
 # Inicialización
 app = FastAPI()
@@ -25,6 +28,39 @@ SHOPIFY_CLIENT_SECRET = "51690bac71da36dbb5c00c854cbbdcc6"
 @app.get("/")
 def home():
     return {"mensaje": "FastAPI conecta correctamente"}
+
+
+# Enpoint al que el modal flotante de shopify se conecata para obteter datos de firebase.
+
+@app.get("/puntos/vista/{email}", response_class=HTMLResponse)
+def vista_puntos(email: str):
+    contact_email = email.replace(".", "_").replace("@", "_at_")
+    ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
+
+    cliente = db.reference(ruta_cliente).get()
+    if not cliente:
+        return "<h2>Cliente no encontrado</h2>"
+
+    puntos = cliente.get("puntos_totales", 0)
+    email_real = cliente.get("email", "Desconocido")
+
+    html = f"""
+    <html>
+    <head><title>Mis puntos</title></head>
+    <body style="font-family: Arial; padding: 20px;">
+        <h2>Hola {email_real}</h2>
+        <p>Tus puntos acumulados son:</p>
+        <h1 style="color: purple;">{puntos} puntos</h1>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html)
+
+
+
+
+
+
 
 @app.get("/oauth/callback")
 async def oauth_callback(request: Request):
