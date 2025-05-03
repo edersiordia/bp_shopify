@@ -51,16 +51,12 @@ def vista_puntos(email: str):
     for k, v in historial.items():
         fecha = v.get("fecha_compra", "Sin fecha")
         total = v.get("total_compra_mxn", 0)
-        razon = v.get("Razon")
-        compra_en_tienda = "Compra en tienda"
-
         puntos_ganados = v.get("puntos_ganados", 0)
         items_historial += f"""
             <div style='margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;'>
                 <strong>Orden:</strong> {k}<br>
                 <strong>Fecha:</strong> {fecha}<br>
                 <strong>Total:</strong> ${total}<br>
-                <strong>Motivo:</strong> {razon}<br>
                 <strong>Puntos ganados:</strong> {puntos_ganados}
             </div>
         """
@@ -251,11 +247,11 @@ async def recibir_webhook(mensaje: Request):
     cliente_ref.update({
         "email": payload.get('customer', {}).get('email', 'sin_email'),
         "nombre_inicial": payload.get('customer', {}).get('first_name', 'Bienvenido'),
+        "razon_puntos": "Compra en tienda",                   
         "puntos_totales": puntos_totales,
         f"historial_pedidos/{orden['shopify_id_order']}": {
             "puntos_ganados": puntos_ganados,
             "total_compra_mxn": total_pagado,
-            "Razon": "Compra en tienda.",                          ################################################################################
             "fecha_compra": orden.get("fecha_compra")
         }
     })
