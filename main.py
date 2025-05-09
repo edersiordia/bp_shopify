@@ -37,9 +37,25 @@ def vista_puntos(email: str):
     contact_email = email.replace(".", "_").replace("@", "_at_")
     ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
 
+
+    #Mensge que enviara si el usuario no tiene una session iniciada de shopify.
     cliente = db.reference(ruta_cliente).get()
     if not cliente:
-        return "<h2>Cliente no encontrado</h2>"
+        return HTMLResponse(content="""
+            <html>
+            <body style="font-family: Arial; padding: 20px; text-align: center;">
+                <h2>¡Hola!</h2>
+                <p>Para comenzar a ganar puntos y ver tu historial, por favor crea una cuenta o inicia sesión en la tienda.</p>
+                <p style="margin-top: 20px;">🛒 Gracias por visitarnos</p>
+            </body>
+            </html>
+        """)
+
+
+
+
+
+
 
     initial_name = cliente.get('nombre_inicial', 'Bienvenido')              
     puntos = cliente.get("puntos_totales", 0)
@@ -64,6 +80,8 @@ def vista_puntos(email: str):
                 <strong>Puntos ganados:</strong> {puntos_ganados}
             </div>
         """
+
+    enlace_referido = f"https://cyscfn-wn.myshopify.com/?ref={contact_email}"
 
     html = f"""
     <html>
@@ -98,13 +116,32 @@ def vista_puntos(email: str):
         <div id="historial" style="display:none; margin-top:20px;">
             {items_historial if items_historial else "<p>No tienes historial de puntos aún.</p>"}
         </div>
+
+        <div style="margin-top: 40px;">
+            <h3>Comparte tu enlace de referido</h3>
+            <input id="enlaceReferido" value="{enlace_referido}" readonly style="width: 90%; padding: 10px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc;">
+            <button onclick="copiarEnlace()" class="boton" style="margin-top: 10px;">Copiar enlace</button>
+            <p id="mensajeCopiado" style="color: green; display: none;">¡Enlace copiado!</p>
+        </div>
+
+        <script>
+        function copiarEnlace() {{
+            const input = document.getElementById("enlaceReferido");
+            input.select();
+            input.setSelectionRange(0, 99999); // Para móviles
+            document.execCommand("copy");
+
+            const mensaje = document.getElementById("mensajeCopiado");
+            mensaje.style.display = "block";
+            setTimeout(() => mensaje.style.display = "none", 2000);
+        }}
+        </script>
     </body>
     </html>
     """
 
 
     return HTMLResponse(content=html)
-
 
 
 
