@@ -32,6 +32,7 @@ def home():
 
 
 
+
 # Enpoint al que el modal flotante de shopify se conecata para obteter datos de firebase.
 
 @app.get("/puntos/vista/{email}", response_class=HTMLResponse)
@@ -44,210 +45,22 @@ def vista_puntos(email: str):
     cliente = db.reference(ruta_cliente).get()
     if not cliente:
         return HTMLResponse(content="""
-                        <html lang="es">
-                        <head>
-                        <meta charset="UTF-8">
-                        <title>Bienvenida Carnicash</title>
-                        <style>
-                            html, body {
-                            height: 100%;
-                            margin: 0;
-                            padding: 0;
-                            background-color: #f9f9f9;
-                            font-family: 'Segoe UI', sans-serif;
-                            display: flex;
-                            flex-direction: column;
-                            }
-
-                            * {
-                              box-sizing: border-box;
-                            }
-
-                            .fade-in-up {
-                            opacity: 0;
-                            transform: translateY(40px);
-                            animation: fadeUp 0.8s ease-out forwards;
-                            }
-
-                            .fade-delay-1 {
-                            animation-delay: 0.3s;
-                            }
-
-                            .fade-delay-2 {
-                            animation-delay: 0.6s;
-                            }
-
-                            .fade-delay-3 {
-                            animation-delay: 0.9s;
-                            }
-
-                            @keyframes fadeUp {
-                            to {
-                                opacity: 1;
-                                transform: translateY(0);
-                            }
-                            }
-
-
-                            body {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            }
-
-
-
-                            .header {
-                                background: linear-gradient(135deg, #4a00e0, #8e2de2);
-                                color: white;
-                                padding: 2rem 1rem 3rem;
-                                text-align: center;
-                                border-bottom-left-radius: 20px;
-                                border-bottom-right-radius: 20px;
-                            }
-
-
-
-
-
-                            .header h1 {
-                            margin: 0.2rem 0;
-                            font-size: 2rem;
-                            }
-
-                            .container {
-                            max-width: 400px;
-                            margin: -2rem auto 1.5rem;
-                            background: white;
-                            border-radius: 16px;
-                            padding: 1.5rem;
-                            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-                            }
-
-                            .container h2 {
-                            margin-top: 0;
-                            font-size: 1.2rem;
-                            }
-
-                            .container p {
-                            color: #666;
-                            font-size: 0.95rem;
-                            }
-
-                            .btn {
-                            display: block;
-                            width: 100%;
-                            margin: 1rem 0;
-                            padding: 0.9rem;
-                            background-color: #6d60f6;
-                            color: white;
-                            border: none;
-                            border-radius: 10px;
-                            font-weight: bold;
-                            font-size: 1rem;
-                            cursor: pointer;
-                            }
-
-                            .link {
-                            text-align: center;
-                            font-size: 0.9rem;
-                            }
-
-                            .link a {
-                            color: #6d60f6;
-                            text-decoration: none;
-                            }
-
-                            .item {
-                            display: flex;
-                            align-items: center;
-                            justify-content: space-between;
-                            padding: 0.7rem 0;
-                            border-top: 1px solid #eee;
-                            }
-
-                            .item:first-child {
-                            border-top: none;
-                            }
-
-                            .recommendations {
-                            max-width: 400px;
-                            margin: 1.5rem auto 1rem;
-                            background: white;
-                            padding: 1.5rem;
-                            border-radius: 16px;
-                            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-                            }
-
-                            .recommendations h3 {
-                            margin-top: 0;
-                            }
-
-                            footer {
-                            text-align: center;
-                            padding: 2rem 1rem;
-                            font-size: 0.85rem;
-                            color: #888;
-                            }
-                        </style>
-                        </head>
-                        <body>
-
-                        <div class="header fade-in-up">
-                            <p>Te damos la bienvenida a</p>
-                            <h1>Carnicash</h1>
-                        </div>
-
-                        <div class="container fade-in-up fade-delay-1">
-                            <h2>Solo para clientes</h2>
-                            <p>Recibe increíbles beneficios al ser cliente de Carnicash: gana puntos y obtén recompensas exclusivas.</p>
-                            <button class="btn">Únete ya</button>
-                            <div class="link">¿Ya tienes una cuenta? <a href="#">Iniciar sesión</a></div>
-                        </div>
-
-                        <div class="recommendations fade-in-up fade-delay-2">
-                            <h3 style="margin-bottom: 0.5rem;">Programa de Referidos</h3>
-                            <p style="color: #666; font-size: 0.95rem; margin-bottom: 1.5rem;">
-                            Cada vez que tus referidos realicen una compra, ganarás puntos.
-                            </p>
-
-                            <div class="item">
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 1.5rem; margin-right: 0.8rem;">💸</span>
-                                <div>
-                                <strong>Ellos obtienen</strong><br>
-                                <span style="color: #666;">1 punto por cada peso MXN.</span>
-                                </div>
-                            </div>
-                            </div>
-
-                            <div class="item" style="margin-top: 1rem;">
-                            <div style="display: flex; align-items: center;">
-                                <span style="font-size: 1.5rem; margin-right: 0.8rem;">⭐</span>
-                                <div>
-                                <strong>Tú obtienes</strong><br>
-                                <span style="color: #666;">El 10% de los puntos que ellos reciban.</span>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-
-                        <footer class="fade-in-up fade-delay-3">
-                            &copy; 2025 Luis Payan. Todos los derechos reservados.
-                        </footer>
-
-                        </body>
-                        </html>
-
+            <html>
+            <body style="font-family: Arial; padding: 20px; text-align: center;">
+                <h2>¡Hola!</h2>
+                <p>Para comenzar a ganar puntos y ver tu historial, por favor crea una cuenta o inicia sesión en la tienda.</p>
+                <p style="margin-top: 20px;">🛒 Gracias por visitarnos</p>
+            </body>
+            </html>
         """)
 
 
 
 
+
+
     #Mensge que enviara si el usuario si tiene una session iniciada de shopify.
-    initial_name = cliente.get('nombre_inicial', 'Bienvenido')
+    initial_name = cliente.get('nombre_inicial', 'Bienvenido')              
     puntos = cliente.get("puntos_totales", 0)
     email_real = cliente.get("email", "Desconocido")
 
@@ -298,7 +111,7 @@ def vista_puntos(email: str):
         <p>Tus puntos acumulados son:</p>
         <h1 style="color: purple;">{puntos} puntos</h1>
 
-        <button class="boton" onclick="document.getElementById('historial').style.display =
+        <button class="boton" onclick="document.getElementById('historial').style.display = 
             document.getElementById('historial').style.display === 'none' ? 'block' : 'none'">
             Historial de Puntos
         </button>
@@ -332,6 +145,10 @@ def vista_puntos(email: str):
 
 
     return HTMLResponse(content=html)
+
+
+
+
 
 
 
@@ -550,5 +367,9 @@ async def recibir_webhook(mensaje: Request):
 
     # Paso 10: Respuesta final
     return {"mensaje": "Webhook recibido, almacenado y puntos actualizados exitosamente"}
+    
+
+
+
 
 
