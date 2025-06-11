@@ -31,12 +31,18 @@ def home():
 
 
 
+
 # Enpoint al que el modal flotante de shopify se conecata para obteter datos de firebase.
 
 @app.get("/puntos/vista/{email}", response_class=HTMLResponse)
 def vista_puntos(email: str):
-    # 1. Si no hay correo válido, mostrar mensaje de bienvenida
-    if not email or "_at_" not in email:
+    contact_email = email.replace(".", "_").replace("@", "_at_")
+    ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
+
+
+    #Mensge que enviara si el usuario no tiene una session iniciada de shopify.
+    cliente = db.reference(ruta_cliente).get()
+    if not cliente:
         return HTMLResponse(content="""
                         <html lang="es">
                         <head>
@@ -200,14 +206,14 @@ def vista_puntos(email: str):
 
                         <a href="https://cyscfn-wn.myshopify.com/account/login"
                             target="_parent"
-                            class="btn"
+                            class="btn" 
                             style="text-decoration: none; display: block; text-align: center; line-height: normal;">
                             Únete ya
                         </a>
 
                         <div class="link">¿Ya tienes una cuenta? <a href="#">Iniciar sesión</a></div>
                         </div>
-
+                          
 
                         <div class="recommendations fade-in-up fade-delay-2">
                             <h3 style="margin-bottom: 0.5rem;">Programa de Referidos</h3>
@@ -248,31 +254,20 @@ def vista_puntos(email: str):
 
 
 
-    # 2. Si el correo fue proporcionado
-    contact_email = email.replace(".", "_").replace("@", "_at_")
-    ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
-    cliente = db.reference(ruta_cliente).get()
-
-    # 3. Si no existe en Firebase, crearlo como invitado
-    if not cliente:
-        db.reference(ruta_cliente).set({
-            "email": email.replace("_at_", "@").replace("_", "."),
-            "nombre_inicial": "que tal !!",
-            "puntos_totales": 0,
-            "historial_pedidos": {}
-        })
-        cliente = db.reference(ruta_cliente).get()
-
-    # 4. Ya existe cliente (nuevo o existente)
+    #Mensge que enviara si el usuario si tiene una session iniciada de shopify.
     initial_name = cliente.get('nombre_inicial', 'Bienvenido')
     puntos = cliente.get("puntos_totales", 0)
+    email_real = cliente.get("email", "Desconocido")
+
     historial = cliente.get("historial_pedidos", {})
 
     items_historial = ""
     for k, v in historial.items():
         fecha = v.get("fecha_compra", "Sin fecha")
         total = v.get("total_compra_mxn", 0)
-        razon = v.get("Razon", "Sin motivo")
+        razon = v.get("Razon")
+        compra_en_tienda = "Compra en tienda"
+
         puntos_ganados = v.get("puntos_ganados", 0)
         items_historial += f"""
             <div style='margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;'>
@@ -288,15 +283,32 @@ def vista_puntos(email: str):
 
     html = f"""
     <html>
-    <head><title>Mis puntos</title></head>
+    <head>
+        <title>Mis puntos</title>
+        <style>
+            .boton {{
+                background-color: #5e4caf;
+                color: white;
+                padding: 12px 18px;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-top: 20px;
+            }}
+            .boton:hover {{
+                background-color: #4b3a90;
+            }}
+        </style>
+    </head>
     <body style="font-family: Arial; padding: 20px;">
         <h2>Hola {initial_name}</h2>
         <p>Tus puntos acumulados son:</p>
         <h1 style="color: purple;">{puntos} puntos</h1>
 
-        <button onclick="document.getElementById('historial').style.display =
+        <button class="boton" onclick="document.getElementById('historial').style.display =
             document.getElementById('historial').style.display === 'none' ? 'block' : 'none'">
-            Ver historial
+            Historial de Puntos
         </button>
 
         <div id="historial" style="display:none; margin-top:20px;">
@@ -305,8 +317,8 @@ def vista_puntos(email: str):
 
         <div style="margin-top: 40px;">
             <h3>Comparte tu enlace de referido</h3>
-            <input id="enlaceReferido" value="{enlace_referido}" readonly style="width: 90%; padding: 10px;">
-            <button onclick="copiarEnlace()">Copiar enlace</button>
+            <input id="enlaceReferido" value="{enlace_referido}" readonly style="width: 90%; padding: 10px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc;">
+            <button onclick="copiarEnlace()" class="boton" style="margin-top: 10px;">Copiar enlace</button>
             <p id="mensajeCopiado" style="color: green; display: none;">¡Enlace copiado!</p>
         </div>
 
@@ -314,8 +326,9 @@ def vista_puntos(email: str):
         function copiarEnlace() {{
             const input = document.getElementById("enlaceReferido");
             input.select();
-            input.setSelectionRange(0, 99999);
+            input.setSelectionRange(0, 99999); // Para móviles
             document.execCommand("copy");
+
             const mensaje = document.getElementById("mensajeCopiado");
             mensaje.style.display = "block";
             setTimeout(() => mensaje.style.display = "none", 2000);
@@ -325,7 +338,12 @@ def vista_puntos(email: str):
     </html>
     """
 
+
     return HTMLResponse(content=html)
+
+
+
+
 
 
 
