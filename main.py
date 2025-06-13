@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from urllib.parse import urlencode
@@ -9,6 +10,7 @@ import firebase_admin
 from firebase_admin import credentials, db
 from datetime import datetime
 from fastapi.responses import HTMLResponse
+
 
 
 
@@ -248,6 +250,7 @@ def vista_puntos(email: str):
 
 
 
+
     # 2. Si el correo fue proporcionado
     contact_email = email.replace(".", "_").replace("@", "_at_")
     ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
@@ -423,6 +426,8 @@ def procesar_payload(payload):
 
 
 
+
+
 ##Lógica actual
 #Se asigna el referidor solo cuando el cliente hace una compra
 #Todo ocurre dentro del webhook /webhook/test1
@@ -434,6 +439,7 @@ def procesar_payload(payload):
 #Asignación del 10% de puntos al referidor (si ya fue asignado).
 
 
+"""
 
 @app.post("/webhook/test1")
 async def recibir_webhook(mensaje: Request):
@@ -540,5 +546,105 @@ async def recibir_webhook(mensaje: Request):
 
     # Paso 10: Respuesta final
     return {"mensaje": "Webhook recibido, almacenado y puntos actualizados exitosamente"}
+"""
 
+
+@app.post("/webhook/test1")
+async def recibir_webhook(mensaje: Request):
+    payload = await mensaje.json()
+    print("----------------------------------------------")
+    print("Webhook completo recibido:")
+    pprint(payload)
+    print("----------------------------------------------")
+
+    orden = procesar_payload(payload)
+    print("Información procesada de la orden:")
+    pprint(orden)
+    print("----------------------------------------------")
+
+    contact_email = payload.get('customer', {}).get('email', 'sin_email').replace(".", "_").replace("@", "_at_")
+    id_orden = str(payload.get("id", "sin_id"))
+
+    ruta_crudo = f"mi_shopify/historial_payloads_crudos/{id_orden}"
+    ruta_limpio = f"mi_shopify/historial_payloads_limpios/{id_orden}"
+    db.reference(ruta_crudo).set(payload)
+    db.reference(ruta_limpio).set(orden)
+
+    try:
+        total_pagado = float(orden.get("total_pagado", 0))
+    except ValueError:
+        total_pagado = 0.0
+
+    puntos_ganados = int(total_pagado)
+
+    ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
+    cliente_ref = db.reference(ruta_cliente)
+    cliente_actual = cliente_ref.get()
+    puntos_totales = cliente_actual.get("puntos_totales", 0) + puntos_ganados if cliente_actual else puntos_ganados
+
+    # Extraer referidor del payload
+    referido_por = None
+    note_attrs = payload.get("note_attributes", [])
+    for item in note_attrs:
+        if item.get("name") == "referido_por":
+            referido_por = item.get("value")
+            break
+
+    ya_tiene_referido = cliente_actual.get("referido_por") if cliente_actual else None
+    referidor_valido = None
+
+    # Si no tiene aún un referidor y viene uno en el payload
+    if not ya_tiene_referido and referido_por:
+        ruta_referidor = f"mi_shopify/puntos_clientes/{referido_por}"
+        ref_data = db.reference(ruta_referidor).get()
+
+        if ref_data and ref_data.get("puntos_totales", 0) > 5:
+            cliente_ref.update({
+                "referido_por": referido_por
+            })
+            referidor_valido = referido_por
+            print(f"Referidor {referido_por} asignado al cliente {contact_email}")
+        else:
+            print(f"Referidor {referido_por} no tiene suficientes puntos o no existe. No se asignó.")
+
+    elif ya_tiene_referido:
+        referidor_valido = ya_tiene_referido
+        print(f"Cliente {contact_email} ya tenía asignado el referidor {referidor_valido}")
+
+    # Actualizar cliente con puntos y guardar pedido
+    cliente_ref.update({
+        "email": payload.get('customer', {}).get('email', 'sin_email'),
+        "nombre_inicial": payload.get('customer', {}).get('first_name', 'Bienvenido'),
+        "puntos_totales": puntos_totales,
+        f"historial_pedidos/{orden['shopify_id_order']}": {
+            "puntos_ganados": puntos_ganados,
+            "total_compra_mxn": total_pagado,
+            "Razon": "Compra en tienda.",
+            "fecha_compra": orden.get("fecha_compra")
+        }
+    })
+    print(f"Puntos actualizados para {contact_email}: {puntos_totales} puntos")
+    print("----------------------------------------------")
+
+    # Si hay referidor válido, darle puntos proporcionales
+    if referidor_valido:
+        puntos_extra = int(puntos_ganados * 0.10)
+        ruta_ref = f"mi_shopify/puntos_clientes/{referidor_valido}"
+        ref_ref = db.reference(ruta_ref)
+        ref_data = ref_ref.get()
+        puntos_totales_referidor = ref_data.get("puntos_totales", 0) + puntos_extra if ref_data else puntos_extra
+
+        ref_ref.update({
+            "puntos_totales": puntos_totales_referidor,
+            f"historial_pedidos/bonus_{orden['shopify_id_order']}": {
+                "puntos_ganados": puntos_extra,
+                "total_compra_mxn": total_pagado,
+                "Razon": f"10% por referido {contact_email}",
+                "fecha_compra": orden.get("fecha_compra")
+            }
+        })
+        print(f"{referidor_valido} recibió {puntos_extra} puntos por la compra que hizo su referido {contact_email}")
+        print("----------------------------------------------")
+
+    return {"mensaje": "Webhook recibido, almacenado y puntos actualizados exitosamente"}
 
