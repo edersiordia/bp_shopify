@@ -451,206 +451,396 @@ def vista_puntos(email: str):
         razon = v.get("Razon", "Sin motivo")
         puntos_ganados = v.get("puntos_ganados", 0)
         items_historial += f"""
-            <div style='margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;'>
-                <strong>Orden:</strong> {k}<br>
-                <strong>Fecha:</strong> {fecha}<br>
-                <strong>Total:</strong> ${total}<br>
-                <strong>Motivo:</strong> {razon}<br>
-                <strong>Puntos ganados:</strong> {puntos_ganados}
+        <div class="ticket">
+            <div class="ticket-header">
+                <strong>🧾 Orden:</strong> {k}
             </div>
+            <div class="ticket-body">
+                <div><strong>📅 Fecha:</strong> {fecha}</div>
+                <div><strong>💰 Total:</strong> ${total}</div>
+                <div><strong>📝 Motivo:</strong> {razon}</div>
+                <div><strong>⭐ Puntos ganados:</strong> {puntos_ganados}</div>
+            </div>
+        </div>
         """
+
+
 
     enlace_referido = f"https://cyscfn-wn.myshopify.com/?ref={contact_email}"
 
 
 
 
-
-
-
-
     html = f"""<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Mis puntos - Carnicash</title>
-    <style>
-        html, body {{
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
+    <html lang="es">
+    <head>
+    <meta charset="UTF-8" />
+    <title>Tus puntos Carnicash</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+    <style>:root {{
+            --morado: #6d60f6;
+            --morado-hover: #574fe0;
+            --sombra-lila: rgba(109, 96, 246, 0.25);
         }}
+
         * {{
             box-sizing: border-box;
         }}
-        .fade-in-up {{
-            opacity: 0;
-            transform: translateY(40px);
-            animation: fadeUp 0.8s ease-out forwards;
-        }}
-        .fade-delay-1 {{ animation-delay: 0.3s; }}
-        .fade-delay-2 {{ animation-delay: 0.6s; }}
-        .fade-delay-3 {{ animation-delay: 0.9s; }}
-        @keyframes fadeUp {{
-            to {{
-                opacity: 1;
-                transform: translateY(0);
-            }}
-        }}
+
         body {{
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            color: #333;
         }}
+
+        /* ======= HEADER ======= */
         .header {{
             background: linear-gradient(135deg, #4a00e0, #8e2de2);
             color: white;
-            padding: 2rem 1rem 3rem;
             text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+            padding: 2rem 1rem 4rem;
+            border-bottom-left-radius: 0px;
+            border-bottom-right-radius: 0px;
+            margin-bottom: -3.5rem;
         }}
+
+        .header p {{
+            margin: 0;
+        }}
+
         .header h1 {{
-            margin: 0.2rem 0;
+            margin: 0.5rem 0 0;
             font-size: 2rem;
         }}
-        .container {{
-            max-width: 400px;
-            margin: -2rem auto 1.5rem;
+
+        /* ======= CARD UNIFICADO ======= */
+
+
+        .wrapper {{
+        max-width: 500px;
+        width: 100%;
+        margin: 0 auto 2rem;
+        display: flex;
+        flex-direction: column;
+        padding: 0 1rem;
+        gap: 0.3rem;
+        }}
+
+
+        .card {{
             background: white;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 1.5rem;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin: 1.5rem auto;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 12px 28px var(--sombra-lila);
         }}
-        .container h2 {{
-            margin-top: 0;
+
+
+
+
+        .card h3 {{
+            margin: 0 0 0.8rem;
             font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }}
-        .container p {{
+
+        .card p {{
+            margin: 0.5rem 0 1rem;
             color: #666;
             font-size: 0.95rem;
         }}
+
+        .item {{
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+        }}
+
+        .item:last-child {{
+            border-bottom: none;
+            margin-bottom: 0;
+        }}
+
+        /* ======= BOTÓN ======= */
         .btn {{
-            display: block;
-            width: 100%;
-            margin: 1rem 0;
-            padding: 0.9rem;
-            background-color: #6d60f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--morado);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-weight: bold;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
+            width: 100%;
+            transition: background 0.2s ease;
         }}
-        .link {{
-            text-align: center;
-            font-size: 0.9rem;
+
+        .btn:hover {{
+            background: var(--morado-hover);
         }}
-        .link a {{
-            color: #6d60f6;
-            text-decoration: none;
+
+        input[type="text"] {{
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 1rem;
         }}
-        .item {{
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 0.7rem 0;
-            border-top: 1px solid #eee;
-            font-size: 0.9rem;
-            color: #333;
+
+        .puntos {{
+            font-size: 2rem;
+            color: purple;
+            margin: 0.2rem 0 1rem;
+            font-weight: bold;
         }}
-        .item:first-child {{
-            border-top: none;
-        }}
-        .referidos, .historial {{
-            max-width: 400px;
-            margin: 1.5rem auto 1rem;
-            background: white;
-            padding: 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        }}
+
         footer {{
             text-align: center;
-            padding: 2rem 1rem;
             font-size: 0.85rem;
-            color: #888;
+            color: #aaa;
+            padding: 2rem;
         }}
-        input {{
-            width: 100%;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+
+        .icon {{
+            display: inline-block;
+            width: 1em;
+            height: 1em;
         }}
-    </style>
-</head>
-<body>
+
+        /* ======= ANIMACIONES ======= */
+        .fade-in-up {{
+            animation: fadeUp 2.5s ease-out both;
+        }}
+
+        @keyframes fadeUp {{
+            0% {{
+            opacity: 0;
+            transform: translateY(20px);
+            }}
+            100% {{
+            opacity: 1;
+            transform: translateY(0);
+            }}
+        }}
+
+        @keyframes zoomFadeIn {{
+            0% {{
+            opacity: 0;
+            transform: scale(0.8) translateY(10px);
+            }}
+            100% {{
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            }}
+        }}
+
+        .animated-header {{
+            animation: zoomFadeIn 2.4s ease-out forwards;
+        }}
+
+        .animated-fast {{
+            animation-delay: 0s;
+        }}
+
+        .animated-medium {{
+            animation-delay: 0.1s;
+        }}
+
+        .animated-slow {{
+            animation-delay: 0.2s;
+        }}
 
 
-    <div class="header fade-in-up">
-        <p>Hola Juan Pérez</p>
-        <h1>Tus puntos Carnicash</h1>
+
+        .ticket {{
+            background: #ffffff;
+            border: 2px dashed #6d60f6;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 24px rgba(109, 96, 246, 0.12);
+            animation: fadeUp 0.5s ease-out both;
+        }}
+
+        .ticket-header {{
+            font-size: 1rem;
+            font-weight: bold;
+            color: #4a00e0;
+            margin-bottom: 0.5rem;
+        }}
+
+        .ticket-body {{
+            font-size: 0.92rem;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }}
+
+
+
+        @keyframes fadeOut {{
+            to {{
+            opacity: 0;
+            visibility: hidden;
+            }}
+        }}</style>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    </head>
+    <body>
+
+    <div id="splash" style="position: fixed;top: 0; left: 0;width: 100vw;height: 100vh;background: white;display: flex;flex-direction: column;justify-content: center;align-items: center;z-index: 9999;animation: fadeOut 0.5s ease-out 1.5s forwards;">
+    <h1 style="font-size: 2rem; color: #6d60f6; margin: 0;">👋 Bienvenido a</h1>
+    <h2 style="font-size: 2.5rem; color: #4a00e0; margin: 0.5rem 0 0;">Carnicash</h2>
     </div>
 
-    <div class="container fade-in-up fade-delay-1">
-        <h2>Puntos acumulados</h2>
-        <p style="font-size: 2rem; color: purple; margin: 0;"><strong>130 puntos</strong></p>
-        <button class="btn" onclick="document.getElementById('historial').style.display =
-            document.getElementById('historial').style.display === 'none' ? 'block' : 'none'">
-            Ver historial de compras
-        </button>
-        <div id="historial" class="historial" style="display:none;">
-            <div class="item">
-                <strong>Orden:</strong> #12345<br>
-                <strong>Fecha:</strong> 2025-06-11<br>
-                <strong>Total:</strong> $250<br>
-                <strong>Motivo:</strong> Compra<br>
-                <strong>Puntos ganados:</strong> 25
-            </div>
+    <div class="header">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+        <div class="animated-header animated-fast" style="font-size: 1rem; opacity: 0;">
+        👋 Hola <strong>{initial_name}</strong>
+        </div>
+        <h1 class="animated-header animated-medium" style="font-size: 1.9rem; margin: 0; opacity: 0;">
+        🔥 <span style="font-weight: 700;">Tus puntos Carnicash</span>
+        </h1>
+        <div class="animated-header animated-slow" style="font-size: 0.9rem; opacity: 0.8; opacity: 0;">
+        ¡Acumula, comparte y gana!
         </div>
     </div>
-
-    <div class="referidos fade-in-up fade-delay-2">
-        <h3>Comparte tu enlace de referido</h3>
-        <p style="color: #666; font-size: 0.95rem;">Gana el 10% de los puntos que tus referidos acumulen.</p>
-        <input id="enlaceReferido" value="https://cyscfn-wn.myshopify.com/?ref=juan_perez" readonly>
-        <button onclick="copiarEnlace()" class="btn" style="margin-top: 10px;">Copiar enlace</button>
-        <p id="mensajeCopiado" style="color: green; display: none;">¡Enlace copiado!</p>
     </div>
 
-    <footer class="fade-in-up fade-delay-3">
-        &copy; 2025 Luis Payan. Todos los derechos reservados.
-    </footer>
+    <div class="wrapper">
+
+        
+        <div class="card fade-in-up">
+            <h3>📊 Puntos actuales</h3>
+            <div class="puntos">{puntos} puntos</div>
+            <button class="btn" onclick="toggleHistorial()">📋 Ver historial de compras</button>
+            <div id="historial" style="display:none; margin-top: 1rem;">
+                {items_historial if items_historial else "<p>No tienes historial de puntos aún.</p>"}
+            </div>
+        </div>
+
+
+
+    
+        <div class="card fade-in-up">
+            <h3 style="margin-bottom: 0.5rem;">Formas de ganar puntos.</h3>
+            <p>Cada vez que tu o tus referidos realicen una compra, ganarás puntos.</p>
+            <div class="item"><strong>Compra de productos:</strong><br>1 punto por cada peso MXN.</div>
+            <div class="item"><strong>Compra de referidos:</strong><br>10% de los puntos que ellos reciban.</div>
+        </div>
+
+  
+        <!-- Formas de ganar puntos -->
+        <div class="card fade-in-up">
+        <h3 style="margin-bottom: 0.5rem;">Formas de ganar puntos.</h3>
+        <p style="color: #666; font-size: 0.95rem; margin-bottom: 1.5rem;">
+            Cada vez que tu o tus referidos realicen una compra, ganarás puntos.
+        </p>
+        <div style="border-bottom: 1px solid #eee; margin: 1rem 0;"></div>
+        <div class="item">
+            <div style="display: flex; align-items: center;">
+            <span style="font-size: 1.5rem; margin-right: 0.8rem;">💸</span>
+            <div>
+                <strong>Compra de productos.</strong><br>
+                <span style="color: #666;">1 punto por cada peso MXN gastado en la tienda.</span>
+            </div>
+            </div>
+        </div>
+        <div class="item">
+            <div style="display: flex; align-items: center;">
+            <span style="font-size: 1.5rem; margin-right: 0.8rem;">⭐</span>
+            <div>
+                <strong>Compra de tus referidos.</strong><br>
+                <span style="color: #666;">El 10% de los puntos que ellos reciban por siempre.</span>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+
+        <div class="card fade-in-up">
+            <h3>🎁 ¿Qué puedo obtener con puntos?</h3>
+            <p>Mira toda la lista de productos y befenifios que puedes obtener y decide cuál será tu próximo regalito!!</p>
+            <button class="btn" onclick="window.open('https://www.mercedes-benz.com.mx/es/passengercars/models.html?group=amg&subgroup=see-all&filters=', '_blank')">💎 Ver productos de canje</button>
+        </div>
+
+        
+        <div class="card fade-in-up">
+            <h3>✔️ Canjear mis puntos YA !!</h3>
+            <p>Canjea tus puntos con toda la confianza.</p>
+            <button class="btn" onclick="window.open('https://wa.me/6695467629?text=Hola%20quiero%20canjear%20mis%20puntos%20carnicash', '_blank')">💎 Canjear ahora</button>
+        </div>
+
+
+        <div class="card fade-in-up">
+            <h3>🔗 Comparte tu enlace de referido</h3>
+            <p>Gana el 10% de los puntos que tus referidos acumulen.<br>Puntos aplican después de tu primera compra.</p>
+            <input type="text" id="enlaceReferido" value="{enlace_referido}" readonly>
+            <button class="btn" onclick="copiarEnlace()">🔗 Copiar enlace</button>
+            <p id="mensajeCopiado" style="color: green; font-size: 0.9rem; display: none;">¡Enlace copiado!</p>
+        </div>
+
+
+        <div class="card fade-in-up" style="text-align: center;">
+            <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem; display: block; width: 100%;">📣 Redes Sociales</h3>
+            <p style="margin-top: 0; font-size: 0.95rem;">Síguenos y entérate de promociones exclusivas.</p>
+            <div style="display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem;">
+            <button class="btn" style="flex: 1; padding: 0.6rem; font-size: 0.85rem; background-color: #25D366;" onclick="window.open('https://wa.me/521123456789')">🟢 WhatsApp</button>
+            <button class="btn" style="flex: 1; padding: 0.6rem; font-size: 0.85rem; background-color: #1877F2;" onclick="window.open('https://facebook.com/Carnicash')">🔵 Facebook</button>
+            <button class="btn" style="flex: 1; padding: 0.6rem; font-size: 0.85rem; background-color: #E1306C;" onclick="window.open('https://instagram.com/Carnicash')">💗 Instagram</button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>&copy; 2025 Luis Payan. Todos los derechos reservados.</footer>
 
     <script>
     function copiarEnlace() {{
-        const input = document.getElementById("enlaceReferido");
-        input.select();
-        input.setSelectionRange(0, 99999);
-        document.execCommand("copy");
-
-        const mensaje = document.getElementById("mensajeCopiado");
-        mensaje.style.display = "block";
-        setTimeout(() => mensaje.style.display = "none", 2000);
+    const input = document.getElementById("enlaceReferido");
+    input.select();
+    input.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    const mensaje = document.getElementById("mensajeCopiado");
+    mensaje.style.display = "block";
+    setTimeout(() => mensaje.style.display = "none", 2000);
     }}
-
-    function cerrarVentana() {{
-        window.location.href = "https://cyscfn-wn.myshopify.com/";
+    function toggleHistorial() {{
+    const h = document.getElementById("historial");
+    h.style.display = h.style.display === "none" ? "block" : "none";
     }}
+    window.onload = function () {{
+    confetti({{
+        particleCount: 150,
+        spread: 70,
+        origin: {{ y: 0.3 }}
+    }});
+    setTimeout(() => {{
+        document.getElementById('splash').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }}, 3000);
+    }};
     </script>
 
-</body>
-</html>
-"""
+    </body>
+    </html>
+    """
     return HTMLResponse(content=html)
+
 
 
 
