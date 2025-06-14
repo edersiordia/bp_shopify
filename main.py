@@ -176,12 +176,22 @@ def vista_puntos(email: str):
                                 font-weight: bold;
                             }
 
+
                             footer {
+                                position: fixed;
+                                bottom: 0;
+                                left: 0;
+                                width: 100%;
+                                background: #f5f5f5;
                                 text-align: center;
                                 font-size: 0.85rem;
                                 color: #aaa;
-                                padding: 2rem;
-                            }
+                                padding: 1rem;
+                                box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+                                z-index: 1000;
+                            }    
+
+
 
                             .icon {
                                 display: inline-block;
@@ -311,7 +321,9 @@ def vista_puntos(email: str):
 
                             <p class="link" style="text-align: center; font-size: 0.9rem; margin-top: 0.8rem;">
                                 ¿Ya tienes una cuenta?
-                                <a href="https://cyscfn-wn.myshopify.com/account/login" style="color: #6d60f6; font-weight: 500;">Iniciar sesión</a>
+                                <a href="https://cyscfn-wn.myshopify.com/account/login"
+                                target="_parent"
+                                style="color: #6d60f6; font-weight: 500;">Iniciar sesión</a>
                             </p>
                             </div>
 
@@ -605,18 +617,33 @@ def vista_puntos(email: str):
             font-weight: bold;
         }}
 
+        
+
         footer {{
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f5f5f5;
             text-align: center;
             font-size: 0.85rem;
             color: #aaa;
-            padding: 2rem;
+            padding: 1rem;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
         }}
+
 
         .icon {{
             display: inline-block;
             width: 1em;
             height: 1em;
         }}
+
+
+
+
+
 
         /* ======= ANIMACIONES ======= */
         .fade-in-up {{
