@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 from urllib.parse import urlencode
@@ -32,7 +31,6 @@ def home():
 
 
 
-
 # Enpoint al que el modal flotante de shopify se conecata para obteter datos de firebase.
 
 @app.get("/puntos/vista/{email}", response_class=HTMLResponse)
@@ -42,211 +40,386 @@ def vista_puntos(email: str):
         return HTMLResponse(content="""
                         <html lang="es">
                         <head>
-                        <meta charset="UTF-8">
-                        <title>Bienvenida Carnicash</title>
-                        <style>
-                            html, body {
-                            height: 100%;
-                            margin: 0;
-                            padding: 0;
-                            background-color: #f9f9f9;
-                            font-family: 'Segoe UI', sans-serif;
-                            display: flex;
-                            flex-direction: column;
+                        <meta charset="UTF-8" />
+                        <title>Tus puntos Carnicash</title>
+                        <meta name="viewport" content="width=device-width, initial-scale=1" />
+                        <link href="https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap" rel="stylesheet" />
+
+
+                            <style>
+                            :root {
+                                --morado: #6d60f6;
+                                --morado-hover: #574fe0;
+                                --sombra-lila: rgba(109, 96, 246, 0.25);
                             }
 
                             * {
-                              box-sizing: border-box;
+                                box-sizing: border-box;
                             }
-
-                            .fade-in-up {
-                            opacity: 0;
-                            transform: translateY(40px);
-                            animation: fadeUp 0.8s ease-out forwards;
-                            }
-
-                            .fade-delay-1 {
-                            animation-delay: 0.3s;
-                            }
-
-                            .fade-delay-2 {
-                            animation-delay: 0.6s;
-                            }
-
-                            .fade-delay-3 {
-                            animation-delay: 0.9s;
-                            }
-
-                            @keyframes fadeUp {
-                            to {
-                                opacity: 1;
-                                transform: translateY(0);
-                            }
-                            }
-
 
                             body {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
+                                margin: 0;
+                                font-family: 'Segoe UI', sans-serif;
+                                background: #f5f5f5;
+                                color: #333;
                             }
 
-
-
+                            /* ======= HEADER ======= */
                             .header {
                                 background: linear-gradient(135deg, #4a00e0, #8e2de2);
                                 color: white;
-                                padding: 2rem 1rem 3rem;
                                 text-align: center;
-                                border-bottom-left-radius: 20px;
-                                border-bottom-right-radius: 20px;
+                                padding: 2rem 1rem 4rem;
+                                border-bottom-left-radius: 0px;
+                                border-bottom-right-radius: 0px;
+                                margin-bottom: -3.5rem;
                             }
 
 
 
-
+                            .header p {
+                                margin: 0;
+                            }
 
                             .header h1 {
-                            margin: 0.2rem 0;
-                            font-size: 2rem;
+                                margin: 0.5rem 0 0;
+                                font-size: 2rem;
                             }
 
-                            .container {
-                            max-width: 400px;
-                            margin: -2rem auto 1.5rem;
-                            background: white;
-                            border-radius: 16px;
-                            padding: 1.5rem;
-                            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-                            }
+                            /* ======= CARD UNIFICADO ======= */
 
-                            .container h2 {
-                            margin-top: 0;
-                            font-size: 1.2rem;
-                            }
 
-                            .container p {
-                            color: #666;
-                            font-size: 0.95rem;
-                            }
-
-                            .btn {
-                            display: block;
+                            .wrapper {
+                            max-width: 500px;
                             width: 100%;
-                            margin: 1rem 0;
-                            padding: 0.9rem;
-                            background-color: #6d60f6;
-                            color: white;
-                            border: none;
-                            border-radius: 10px;
-                            font-weight: bold;
-                            font-size: 1rem;
-                            cursor: pointer;
+                            margin: 0 auto 2rem;
+                            display: flex;
+                            padding: 0 1rem;
+                            flex-direction: column;
+                            gap: 0.3rem;
                             }
 
-                            .link {
-                            text-align: center;
-                            font-size: 0.9rem;
+
+                            .card {
+                                background: white;
+                                border-radius: 20px;
+                                padding: 1.5rem;
+                                margin: 1.5rem auto;
+                                width: 100%;
+                                max-width: 500px;
+                                box-shadow: 0 12px 28px var(--sombra-lila);
                             }
 
-                            .link a {
-                            color: #6d60f6;
-                            text-decoration: none;
+
+
+
+                            .card h3 {
+                                margin: 0 0 0.8rem;
+                                font-size: 1.2rem;
+                                display: flex;
+                                align-items: center;
+                                gap: 0.5rem;
+                            }
+
+                            .card p {
+                                margin: 0.5rem 0 1rem;
+                                color: #666;
+                                font-size: 0.95rem;
                             }
 
                             .item {
-                            display: flex;
-                            align-items: center;
-                            justify-content: space-between;
-                            padding: 0.7rem 0;
-                            border-top: 1px solid #eee;
+                                padding-bottom: 1rem;
+                                border-bottom: 1px solid #eee;
+                                margin-bottom: 1rem;
                             }
 
-                            .item:first-child {
-                            border-top: none;
+                            .item:last-child {
+                                border-bottom: none;
+                                margin-bottom: 0;
                             }
 
-                            .recommendations {
-                            max-width: 400px;
-                            margin: 1.5rem auto 1rem;
-                            background: white;
-                            padding: 1.5rem;
-                            border-radius: 16px;
-                            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                            /* ======= BOTÓN ======= */
+                            .btn {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                gap: 0.5rem;
+                                background: var(--morado);
+                                color: white;
+                                border: none;
+                                border-radius: 12px;
+                                padding: 0.8rem 1rem;
+                                font-weight: 600;
+                                font-size: 1rem;
+                                cursor: pointer;
+                                width: 100%;
+                                transition: background 0.2s ease;
                             }
 
-                            .recommendations h3 {
-                            margin-top: 0;
+                            .btn:hover {
+                                background: var(--morado-hover);
+                            }
+
+                            input[type="text"] {
+                                width: 100%;
+                                padding: 0.8rem;
+                                font-size: 14px;
+                                border: 1px solid #ccc;
+                                border-radius: 10px;
+                                margin-bottom: 1rem;
+                            }
+
+                            .puntos {
+                                font-size: 2rem;
+                                color: purple;
+                                margin: 0.2rem 0 1rem;
+                                font-weight: bold;
                             }
 
                             footer {
-                            text-align: center;
-                            padding: 2rem 1rem;
-                            font-size: 0.85rem;
-                            color: #888;
+                                text-align: center;
+                                font-size: 0.85rem;
+                                color: #aaa;
+                                padding: 2rem;
                             }
-                        </style>
+
+                            .icon {
+                                display: inline-block;
+                                width: 1em;
+                                height: 1em;
+                            }
+
+                            /* ======= ANIMACIONES ======= */
+                            .fade-in-up {
+                                animation: fadeUp 2.5s ease-out both;
+                            }
+
+                            @keyframes fadeUp {
+                                0% {
+                                opacity: 0;
+                                transform: translateY(20px);
+                                }
+                                100% {
+                                opacity: 1;
+                                transform: translateY(0);
+                                }
+                            }
+
+                            @keyframes zoomFadeIn {
+                                0% {
+                                opacity: 0;
+                                transform: scale(0.8) translateY(10px);
+                                }
+                                100% {
+                                opacity: 1;
+                                transform: scale(1) translateY(0);
+                                }
+                            }
+
+                            .animated-header {
+                                animation: zoomFadeIn 2.4s ease-out forwards;
+                            }
+
+                            .animated-fast {
+                                animation-delay: 0s;
+                            }
+
+                            .animated-medium {
+                                animation-delay: 0.1s;
+                            }
+
+                            .animated-slow {
+                                animation-delay: 0.2s;
+                            }
+
+                            @keyframes fadeOut {
+                                to {
+                                opacity: 0;
+                                visibility: hidden;
+                                }
+                            }
+                            </style>
+
+
+
+                        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
                         </head>
                         <body>
 
-                        <div class="header fade-in-up">
-                            <p>Te damos la bienvenida a</p>
-                            <h1>Carnicash</h1>
-                        </div>
-
-                        <div class="container fade-in-up fade-delay-1">
-                        <h2>Solo para clientes</h2>
-                        <p>Recibe increíbles beneficios al ser cliente de Carnicash: gana puntos y obtén recompensas exclusivas.</p>
-
-                        <a href="https://cyscfn-wn.myshopify.com/account/login"
-                            target="_parent"
-                            class="btn"
-                            style="text-decoration: none; display: block; text-align: center; line-height: normal;">
-                            Únete ya
-                        </a>
-
-                        <div class="link">¿Ya tienes una cuenta? <a href="#">Iniciar sesión</a></div>
-                        </div>
 
 
-                        <div class="recommendations fade-in-up fade-delay-2">
-                            <h3 style="margin-bottom: 0.5rem;">Programa de Referidos</h3>
-                            <p style="color: #666; font-size: 0.95rem; margin-bottom: 1.5rem;">
-                            Cada vez que tus referidos realicen una compra, ganarás puntos.
+
+
+
+
+                            <!-- Pantalla de bienvenida -->
+                            <div id="splash" style="
+                                position: fixed;
+                                top: 0; left: 0;
+                                width: 100vw;
+                                height: 100vh;
+                                background: white;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;
+                                align-items: center;
+                                z-index: 9999;
+                                animation: fadeOut 0.5s ease-out 1.5s forwards;
+                            ">
+                            <h2 style="font-size: 2rem; color: #6d60f6; margin: 0;">👋 Carnicash</h2>
+                            </div>
+
+
+
+                            <div class="header">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.3rem;">
+                                <div class="animated-header animated-fast" style="font-size: 1rem; opacity: 0;">
+                                🥩🔥 <strong></strong>
+                                </div>
+                                <h1 class="animated-header animated-medium" style="font-size: 1.7rem; margin: 0; opacity: 0;">
+                                 <span style="font-weight: 700;">Bienvenido a Carnicash</span>
+                                </h1>
+                                <div class="animated-header animated-slow" style="font-size: 0.9rem; opacity: 0.8; opacity: 0;">
+                                ¡Acumula, comparte y gana!
+                                
+                                </div>
+                            </div>
+                            </div>
+
+
+
+
+                        <div class="wrapper">
+
+
+
+
+                            <div class="card fade-in-up">
+                            <h3 style="margin-top: 0; font-size: 1.3rem;">✍️ Solo para clientes</h3>
+
+                            <p style="font-size: 0.95rem; color: #555; margin-bottom: 1.2rem;">
+                                Recibe increíbles beneficios al ser cliente de Carnicash: gana puntos y obtén recompensas exclusivas.
                             </p>
 
+                            <a href="https://cyscfn-wn.myshopify.com/account/login"
+                                target="_parent"
+                                class="btn"
+                                style="text-decoration: none; display: block; text-align: center; line-height: normal;">
+                                Únete ya
+                            </a>
+
+                            <p class="link" style="text-align: center; font-size: 0.9rem; margin-top: 0.8rem;">
+                                ¿Ya tienes una cuenta?
+                                <a href="https://cyscfn-wn.myshopify.com/account/login" style="color: #6d60f6; font-weight: 500;">Iniciar sesión</a>
+                            </p>
+                            </div>
+
+
+
+                            <!-- Productos de Canje -->
+                            <div class="card fade-in-up">
+                            <h3>🎁 ¿Qué beneficios hay?</h3>
+                            <p>Mira toda la lista de productos y beneficios que puedes obtener y decide cuál será tu próximo regalito!!</p>
+                            <button class="btn" onclick="window.open('https://www.mercedes-benz.com.mx/es/passengercars/models.html?group=amg&subgroup=see-all&filters=', '_blank')">
+                                💎 Ver productos de canje
+                            </button>
+                            </div>
+
+
+
+
+                            <!-- Formas de ganar puntos -->
+                            <div class="card fade-in-up">
+                            <h3 style="margin-bottom: 0.5rem;">Formas de ganar puntos.</h3>
+                            <p style="color: #666; font-size: 0.90rem; margin-bottom: 1.5rem;">
+                                Cada vez que tu o tus referidos realicen una compra, ganarás puntos.
+                            </p>
+                            <div style="border-bottom: 1px solid #eee; margin: 1rem 0;"></div>
                             <div class="item">
-                            <div style="display: flex; align-items: center;">
+                                <div style="display: flex; align-items: center;">
                                 <span style="font-size: 1.5rem; margin-right: 0.8rem;">💸</span>
                                 <div>
-                                <strong>Ellos obtienen</strong><br>
-                                <span style="color: #666;">1 punto por cada peso MXN.</span>
+                                    <strong>Compra de productos.</strong><br>
+                                    <span style="color: #666;">1 punto por cada peso MXN gastado en la tienda.</span>
+                                </div>
                                 </div>
                             </div>
-                            </div>
-
-                            <div class="item" style="margin-top: 1rem;">
-                            <div style="display: flex; align-items: center;">
+                            <div class="item">
+                                <div style="display: flex; align-items: center;">
                                 <span style="font-size: 1.5rem; margin-right: 0.8rem;">⭐</span>
                                 <div>
-                                <strong>Tú obtienes</strong><br>
-                                <span style="color: #666;">El 10% de los puntos que ellos reciban.</span>
+                                    <strong>Compra de tus referidos.</strong><br>
+                                    <span style="color: #666;">El 10% de los puntos que ellos reciban por siempre.</span>
+                                </div>
                                 </div>
                             </div>
                             </div>
-                        </div>
 
-                        <footer class="fade-in-up fade-delay-3">
+
+
+
+                            <!-- Redes sociales -->
+                            <div class="card fade-in-up" style="text-align: center;">
+                            <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem; display: block; width: 100%;">📣 Redes Sociales</h3>
+                            <p style="margin-top: 0; font-size: 0.95rem;">Síguenos y entérate de promociones exclusivas.</p>
+                            <div style="display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem;">
+                                <button class="btn" style="flex: 1; padding: 0.6rem; font-size: 0.85rem; background-color: #25D366;" onclick="window.open('https://wa.me/521123456789')">
+                                🟢 WhatsApp
+                                </button>
+                                <button class="btn" style="flex: 1; padding: 0.6rem; font-size: 0.85rem; background-color: #1877F2;" onclick="window.open('https://facebook.com/Carnicash')">
+                                🔵 Facebook
+                                </button>
+                                <button class="btn" style="flex: 1; padding: 0.6rem; font-size: 0.85rem; background-color: #E1306C;" onclick="window.open('https://instagram.com/Carnicash')">
+                                💗 Instagram
+                                </button>
+                            </div>
+                            </div>
+
+
+                        <footer>
                             &copy; 2025 Luis Payan. Todos los derechos reservados.
                         </footer>
+
+                        <script>
+                            function copiarEnlace() {
+                            const input = document.getElementById("enlaceReferido");
+                            input.select();
+                            input.setSelectionRange(0, 99999);
+                            document.execCommand("copy");
+
+                            const mensaje = document.getElementById("mensajeCopiado");
+                            mensaje.style.display = "block";
+                            setTimeout(() => mensaje.style.display = "none", 2000);
+                            }
+
+                            function toggleHistorial() {
+                            const h = document.getElementById("historial");
+                            h.style.display = h.style.display === "none" ? "block" : "none";
+                            }
+
+
+                            window.onload = function () {
+                                // Lanzar confetti
+                                confetti({
+                                particleCount: 150,
+                                spread: 70,
+                                origin: { y: 0.3 }
+                                });
+
+                                setTimeout(() => {
+                                document.getElementById('splash').style.display = 'none';
+                                document.body.style.overflow = 'auto';
+                                }, 3000);
+                            };
+
+
+                        </script>
 
                         </body>
                         </html>
 
         """)
-
 
 
 
@@ -488,11 +661,6 @@ def vista_puntos(email: str):
 
 
 
-
-
-
-
-
 #codigo para que el backend valide y realice la conexion con la aplicacion flotante de shopify.
 
 @app.get("/oauth/callback")
@@ -688,4 +856,5 @@ async def recibir_webhook(mensaje: Request):
         print("----------------------------------------------")
 
     return {"mensaje": "Webhook recibido, almacenado y puntos actualizados exitosamente"}
+
 
