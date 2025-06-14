@@ -289,46 +289,204 @@ def vista_puntos(email: str):
 
     enlace_referido = f"https://cyscfn-wn.myshopify.com/?ref={contact_email}"
 
-    html = f"""
-    <html>
-    <head><title>Mis puntos</title></head>
-    <body style="font-family: Arial; padding: 20px;">
-        <h2>Hola {initial_name}</h2>
-        <p>Tus puntos acumulados son:</p>
-        <h1 style="color: purple;">{puntos} puntos</h1>
 
-        <button onclick="document.getElementById('historial').style.display =
-            document.getElementById('historial').style.display === 'none' ? 'block' : 'none'">
-            Ver historial
-        </button>
 
-        <div id="historial" style="display:none; margin-top:20px;">
-            {items_historial if items_historial else "<p>No tienes historial de puntos aún.</p>"}
-        </div>
 
-        <div style="margin-top: 40px;">
-            <h3>Comparte tu enlace de referido</h3>
-            <input id="enlaceReferido" value="{enlace_referido}" readonly style="width: 90%; padding: 10px;">
-            <button onclick="copiarEnlace()">Copiar enlace</button>
-            <p id="mensajeCopiado" style="color: green; display: none;">¡Enlace copiado!</p>
-        </div>
 
-        <script>
-        function copiarEnlace() {{
-            const input = document.getElementById("enlaceReferido");
-            input.select();
-            input.setSelectionRange(0, 99999);
-            document.execCommand("copy");
-            const mensaje = document.getElementById("mensajeCopiado");
-            mensaje.style.display = "block";
-            setTimeout(() => mensaje.style.display = "none", 2000);
+
+
+
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis puntos - Carnicash</title>
+    <style>
+        html, body {{
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
         }}
-        </script>
-    </body>
-    </html>
-    """
+        * {{
+            box-sizing: border-box;
+        }}
+        .fade-in-up {{
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeUp 0.8s ease-out forwards;
+        }}
+        .fade-delay-1 {{ animation-delay: 0.3s; }}
+        .fade-delay-2 {{ animation-delay: 0.6s; }}
+        .fade-delay-3 {{ animation-delay: 0.9s; }}
+        @keyframes fadeUp {{
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+        body {{
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }}
+        .header {{
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            color: white;
+            padding: 2rem 1rem 3rem;
+            text-align: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }}
+        .header h1 {{
+            margin: 0.2rem 0;
+            font-size: 2rem;
+        }}
+        .container {{
+            max-width: 400px;
+            margin: -2rem auto 1.5rem;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }}
+        .container h2 {{
+            margin-top: 0;
+            font-size: 1.2rem;
+        }}
+        .container p {{
+            color: #666;
+            font-size: 0.95rem;
+        }}
+        .btn {{
+            display: block;
+            width: 100%;
+            margin: 1rem 0;
+            padding: 0.9rem;
+            background-color: #6d60f6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }}
+        .link {{
+            text-align: center;
+            font-size: 0.9rem;
+        }}
+        .link a {{
+            color: #6d60f6;
+            text-decoration: none;
+        }}
+        .item {{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0.7rem 0;
+            border-top: 1px solid #eee;
+            font-size: 0.9rem;
+            color: #333;
+        }}
+        .item:first-child {{
+            border-top: none;
+        }}
+        .referidos, .historial {{
+            max-width: 400px;
+            margin: 1.5rem auto 1rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }}
+        footer {{
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.85rem;
+            color: #888;
+        }}
+        input {{
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }}
+    </style>
+</head>
+<body>
 
+
+    <div class="header fade-in-up">
+        <p>Hola Juan Pérez</p>
+        <h1>Tus puntos Carnicash</h1>
+    </div>
+
+    <div class="container fade-in-up fade-delay-1">
+        <h2>Puntos acumulados</h2>
+        <p style="font-size: 2rem; color: purple; margin: 0;"><strong>130 puntos</strong></p>
+        <button class="btn" onclick="document.getElementById('historial').style.display =
+            document.getElementById('historial').style.display === 'none' ? 'block' : 'none'">
+            Ver historial de compras
+        </button>
+        <div id="historial" class="historial" style="display:none;">
+            <div class="item">
+                <strong>Orden:</strong> #12345<br>
+                <strong>Fecha:</strong> 2025-06-11<br>
+                <strong>Total:</strong> $250<br>
+                <strong>Motivo:</strong> Compra<br>
+                <strong>Puntos ganados:</strong> 25
+            </div>
+        </div>
+    </div>
+
+    <div class="referidos fade-in-up fade-delay-2">
+        <h3>Comparte tu enlace de referido</h3>
+        <p style="color: #666; font-size: 0.95rem;">Gana el 10% de los puntos que tus referidos acumulen.</p>
+        <input id="enlaceReferido" value="https://cyscfn-wn.myshopify.com/?ref=juan_perez" readonly>
+        <button onclick="copiarEnlace()" class="btn" style="margin-top: 10px;">Copiar enlace</button>
+        <p id="mensajeCopiado" style="color: green; display: none;">¡Enlace copiado!</p>
+    </div>
+
+    <footer class="fade-in-up fade-delay-3">
+        &copy; 2025 Luis Payan. Todos los derechos reservados.
+    </footer>
+
+    <script>
+    function copiarEnlace() {{
+        const input = document.getElementById("enlaceReferido");
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+
+        const mensaje = document.getElementById("mensajeCopiado");
+        mensaje.style.display = "block";
+        setTimeout(() => mensaje.style.display = "none", 2000);
+    }}
+
+    function cerrarVentana() {{
+        window.location.href = "https://cyscfn-wn.myshopify.com/";
+    }}
+    </script>
+
+</body>
+</html>
+"""
     return HTMLResponse(content=html)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -428,125 +586,8 @@ def procesar_payload(payload):
 
 
 
-##Lógica actual
-#Se asigna el referidor solo cuando el cliente hace una compra
-#Todo ocurre dentro del webhook /webhook/test1
-#Solo se registra referidor con una compra real
-
-#Registro de payload crudo y limpio.
-#Cálculo de puntos.
-#Asignación de referidor si el cliente no tiene uno.
-#Asignación del 10% de puntos al referidor (si ya fue asignado).
 
 
-"""
-
-@app.post("/webhook/test1")
-async def recibir_webhook(mensaje: Request):
-    #Paso 1: Cargar el contenido (JSON) del webhook recibido
-    payload = await mensaje.json()
-    print("----------------------------------------------")
-    print("Webhook completo recibido:")
-    pprint(payload)
-    print("----------------------------------------------")
-
-    #Paso 2: Procesar la orden y extraer los datos útiles
-    orden = procesar_payload(payload)
-    print("Información procesada de la orden:")
-    pprint(orden)
-    print("----------------------------------------------")
-
-    #Paso 3: Extraer ID de la orden y email del cliente
-    contact_email = payload.get('customer', {}).get('email', 'sin_email').replace(".", "_").replace("@", "_at_")
-    id_orden = str(payload.get("id", "sin_id"))
-
-    #Paso 4: Guardar los payloads crudo y limpio en Firebase
-    ruta_crudo = f"mi_shopify/historial_payloads_crudos/{id_orden}"
-    ruta_limpio = f"mi_shopify/historial_payloads_limpios/{id_orden}"
-    db.reference(ruta_crudo).set(payload)
-    db.reference(ruta_limpio).set(orden)
-
-    #Paso 5: Calcular puntos basados en el total pagado
-    try:
-        total_pagado = float(orden.get("total_pagado", 0))
-    except ValueError:
-        total_pagado = 0.0
-
-    #Este codigo esta definiciendo que por cada peso gastado se le dara un punto al cliente.
-    #Mas adelante si se quiere modificar, esta parte es la que debera de cambiar.
-    puntos_ganados = int(total_pagado)
-
-
-
-    #  Paso 6: Consulta los puntos actuales del cliente en Firebase
-    ruta_cliente = f"mi_shopify/puntos_clientes/{contact_email}"
-    cliente_ref = db.reference(ruta_cliente)
-    cliente_actual = cliente_ref.get()
-    puntos_totales = cliente_actual.get("puntos_totales", 0) + puntos_ganados if cliente_actual else puntos_ganados
-
-
-    #Paso 7: Asignar referidor si el cliente aún no tiene uno. Aqui tomara el referidor del url cuando recien entra.
-    # Usar cart attributes (mejor forma)
-    referido_por = None
-    note_attrs = payload.get("note_attributes", [])
-    for item in note_attrs:
-        if item.get("name") == "referido_por":
-            referido_por = item.get("value")
-            break
-
-
-
-    #Aqui revisara, si el cliente ya existe y aun no tiene referido y la compra se hizo por un enlace de referido, entonces asigan el referidor.
-    if cliente_actual and not cliente_actual.get("referido_por") and referido_por:
-        cliente_ref.update({
-            "referido_por": referido_por
-        })
-        print(f"Referidor {referido_por} asignado al cliente {contact_email}")
-        print("----------------------------------------------")
-
-
-
-    # Paso 8: Actualizar puntos del cliente y guardar historial de pedido
-    cliente_ref.update({
-        "email": payload.get('customer', {}).get('email', 'sin_email'),
-        "nombre_inicial": payload.get('customer', {}).get('first_name', 'Bienvenido'),
-        "puntos_totales": puntos_totales,
-        f"historial_pedidos/{orden['shopify_id_order']}": {
-            "puntos_ganados": puntos_ganados,
-            "total_compra_mxn": total_pagado,
-            "Razon": "Compra en tienda.",
-            "fecha_compra": orden.get("fecha_compra")
-        }
-    })
-    print(f" Puntos actualizados para {contact_email}: {puntos_totales} puntos")
-    print("----------------------------------------------")
-
-
-
-    # Paso 9: Si el cliente ya tenia referidor, aqui le otorgaremos el 10% en puntos
-    referidor = cliente_actual.get("referido_por") if cliente_actual else None
-    if referidor:
-        puntos_extra = int(puntos_ganados * 0.10) ##Este es el calculo que se puede cambiar en el futuro.
-        ruta_referidor = f"mi_shopify/puntos_clientes/{referidor}"
-        ref_ref = db.reference(ruta_referidor)
-        ref_data = ref_ref.get()
-        puntos_totales_referidor = ref_data.get("puntos_totales", 0) + puntos_extra if ref_data else puntos_extra
-
-        ref_ref.update({
-            "puntos_totales": puntos_totales_referidor,
-            f"historial_pedidos/bonus_{orden['shopify_id_order']}": {
-                "puntos_ganados": puntos_extra,
-                "total_compra_mxn": total_pagado,
-                "Razon": f"10% por referido {contact_email}",
-                "fecha_compra": orden.get("fecha_compra")
-            }
-        })
-        print(f"{referidor} recibió {puntos_extra} puntos por la compra que hizo su referido {contact_email}")
-        print("----------------------------------------------")
-
-    # Paso 10: Respuesta final
-    return {"mensaje": "Webhook recibido, almacenado y puntos actualizados exitosamente"}
-"""
 
 
 @app.post("/webhook/test1")
