@@ -761,14 +761,6 @@ def vista_puntos(email: str):
 
 
 
-    
-        <div class="card fade-in-up">
-            <h3 style="margin-bottom: 0.5rem;">Formas de ganar puntos.</h3>
-            <p>Cada vez que tu o tus referidos realicen una compra, ganarás puntos.</p>
-            <div class="item"><strong>Compra de productos:</strong><br>1 punto por cada peso MXN.</div>
-            <div class="item"><strong>Compra de referidos:</strong><br>10% de los puntos que ellos reciban.</div>
-        </div>
-
   
         <!-- Formas de ganar puntos -->
         <div class="card fade-in-up">
