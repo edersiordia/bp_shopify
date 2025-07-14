@@ -13,6 +13,7 @@ from fastapi.responses import HTMLResponse
 
 
 
+
 # Inicialización
 app = FastAPI()
 
@@ -28,6 +29,8 @@ SHOPIFY_CLIENT_SECRET = "51690bac71da36dbb5c00c854cbbdcc6"
 @app.get("/")
 def home():
     return {"mensaje": "FastAPI conecta correctamente"}
+
+
 
 
 
@@ -329,14 +332,16 @@ def vista_puntos(email: str):
 
 
 
+      
                             <!-- Productos de Canje -->
                             <div class="card fade-in-up">
                             <h3>🎁 ¿Qué beneficios hay?</h3>
                             <p>Mira toda la lista de productos y beneficios que puedes obtener y decide cuál será tu próximo regalito!!</p>
-                            <button class="btn" onclick="window.open('https://www.mercedes-benz.com.mx/es/passengercars/models.html?group=amg&subgroup=see-all&filters=', '_blank')">
+                            <button class="btn" onclick="window.open('https://drive.google.com/file/d/1OzDpDeIqnVDSBAw7IscHRaJXR812zW0Z/preview', '_blank', 'noopener,noreferrer')">
                                 💎 Ver productos de canje
                             </button>
                             </div>
+
 
 
 
@@ -792,10 +797,13 @@ def vista_puntos(email: str):
 
 
         <div class="card fade-in-up">
-            <h3>🎁 ¿Qué puedo obtener con puntos?</h3>
-            <p>Mira toda la lista de productos y befenifios que puedes obtener y decide cuál será tu próximo regalito!!</p>
-            <button class="btn" onclick="window.open('https://www.mercedes-benz.com.mx/es/passengercars/models.html?group=amg&subgroup=see-all&filters=', '_blank')">💎 Ver productos de canje</button>
+        <h3>🎁 ¿Qué puedo obtener con mis puntos?</h3>
+        <p>Mira toda la lista de productos y beneficios que puedes obtener y decide cuál será tu próximo regalito!!</p>
+        <button class="btn" onclick="window.open('https://drive.google.com/file/d/1OzDpDeIqnVDSBAw7IscHRaJXR812zW0Z/preview', '_blank', 'noopener,noreferrer')">
+            💎 Ver productos de canje
+        </button>
         </div>
+        
 
         
         <div class="card fade-in-up">
